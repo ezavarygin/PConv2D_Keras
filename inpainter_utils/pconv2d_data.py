@@ -96,3 +96,20 @@ def random_mask(height, width, channels=3, mask_seed=None):
     return img
 
 
+def torch_vgg_pp(x):
+    """
+    Image pre-processing function used in PyTorch.
+
+    For an RGB image:
+       1) 1/255 scaling,
+       2) per-channel mean subtraction (0.485, 0.456, 0.406),
+       2) per-channel scaling by std (0.229, 0.224, 0.225).
+    """
+    x /= 255.
+    x[..., 0] -= 0.485
+    x[..., 1] -= 0.456
+    x[..., 2] -= 0.406
+    x[..., 0] /= 0.229
+    x[..., 1] /= 0.224
+    x[..., 2] /= 0.225
+    return x

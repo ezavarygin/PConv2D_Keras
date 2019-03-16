@@ -1,6 +1,6 @@
 import numpy as np
 from keras.callbacks import ModelCheckpoint, TensorBoard
-from inpainter_utils.pconv2d_data import DataGenerator
+from inpainter_utils.pconv2d_data import DataGenerator, torch_vgg_pp
 from inpainter_utils.pconv2d_loss import vgg16_feature_model
 from inpainter_utils.pconv2d_model import pconv_model
 
@@ -12,18 +12,7 @@ BATCH_SIZE   = 1
 VAL_STEPS    = 400
 INIT_STAGE   = True # fine-tuning stage if False 
 
-# Create data generators:
-def torch_vgg_pp(x):
-    """  RGB image normalisation: mean = [0.485, 0.456, 0.406], std  = [0.229, 0.224, 0.225]. """
-    x /= 255.
-    x[..., 0] -= 0.485
-    x[..., 1] -= 0.456
-    x[..., 2] -= 0.406
-    x[..., 0] /= 0.229
-    x[..., 1] /= 0.224
-    x[..., 2] /= 0.225
-    return x
-
+# Data generators:
 # Create training generator
 train_datagen   = DataGenerator(preprocessing_function=torch_vgg_pp, horizontal_flip=True)
 train_generator = train_datagen.flow_from_directory(
@@ -31,7 +20,6 @@ train_generator = train_datagen.flow_from_directory(
     target_size=(512, 512),
     batch_size=BATCH_SIZE
 )
-
 # Create validation generator
 val_datagen   = DataGenerator(preprocessing_function=torch_vgg_pp)
 val_generator = val_datagen.flow_from_directory(
@@ -43,11 +31,6 @@ val_generator = val_datagen.flow_from_directory(
     total_steps=VAL_STEPS,
     shuffle=False
 )
-
-# Feature extraction:
-#vgg16_lnames = ['block1_pool', 'block2_pool', 'block3_pool']
-#vgg_model = vgg16_feature_model(vgg16_lnames, weights=VGG16_W_PATH)
-
 
 # Training:
 if INIT_STAGE:
