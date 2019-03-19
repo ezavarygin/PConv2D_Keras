@@ -44,7 +44,7 @@ if INIT_STAGE:
         validation_steps=VAL_STEPS,
         callbacks=[
             TensorBoard(log_dir=TB_PATH + 'initial/', write_graph=True),
-            ModelCheckpoint(WEIGHTS_DIR + 'initial/weights.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
+            ModelCheckpoint(WEIGHTS_DIR + 'initial/weights.{epoch:02d}-{val_loss:.2f}-{loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
         ]
     )
 else:
@@ -61,6 +61,6 @@ else:
         validation_steps=VAL_STEPS,
         callbacks=[
             TensorBoard(log_dir=TB_PATH + 'fine_tuning/', write_graph=True),
-            ModelCheckpoint(WEIGHTS_DIR + 'fine_tuning/weights.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
+            ModelCheckpoint(WEIGHTS_DIR + 'fine_tuning/weights.{epoch:02d}-{val_loss:.2f}-{loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
     ]
 )
