@@ -1,18 +1,18 @@
 import numpy as np
-from keras.callbacks import ModelCheckpoint, TensorBoard
+from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger
 from inpainter_utils.pconv2d_data import DataGenerator, torch_vgg_pp
-from inpainter_utils.pconv2d_loss import vgg16_feature_model
 from inpainter_utils.pconv2d_model import pconv_model
 
-# Settings:
+# SETTINGS:
 IMG_DIR      = "data/images/"
 WEIGHTS_DIR  = "callbacks/weights/"
 TB_PATH      = "callbacks/tensorboard/"
-BATCH_SIZE   = 1
-VAL_STEPS    = 400
+CSV_PATH     = 'callbacks/csvlogger/'
+BATCH_SIZE   = 2
+VAL_STEPS    = 200
 INIT_STAGE   = True # fine-tuning stage if False 
 
-# Data generators:
+# DATA GENERATORS:
 # Create training generator
 train_datagen   = DataGenerator(preprocessing_function=torch_vgg_pp, horizontal_flip=True)
 train_generator = train_datagen.flow_from_directory(
@@ -32,7 +32,7 @@ val_generator = val_datagen.flow_from_directory(
     shuffle=False
 )
 
-# Training:
+# TRAINING:
 if INIT_STAGE:
     # Stage 1: initial training
     model = pconv_model(lr=0.0001)
@@ -43,6 +43,7 @@ if INIT_STAGE:
         validation_data=val_generator,
         validation_steps=VAL_STEPS,
         callbacks=[
+            CSVLogger(CSV_PATH + 'initial/log.csv'),
             TensorBoard(log_dir=TB_PATH + 'initial/', write_graph=True),
             ModelCheckpoint(WEIGHTS_DIR + 'initial/weights.{epoch:02d}-{val_loss:.2f}-{loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
         ]
@@ -60,6 +61,7 @@ else:
         validation_data=val_generator,
         validation_steps=VAL_STEPS,
         callbacks=[
+            CSVLogger(CSV_PATH + 'fine_tuning/log.csv'),
             TensorBoard(log_dir=TB_PATH + 'fine_tuning/', write_graph=True),
             ModelCheckpoint(WEIGHTS_DIR + 'fine_tuning/weights.{epoch:02d}-{val_loss:.2f}-{loss:.2f}.hdf5', monitor='val_loss', verbose=1, save_weights_only=True)
     ]
