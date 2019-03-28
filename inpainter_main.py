@@ -1,6 +1,6 @@
 import numpy as np
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger
-from inpainter_utils.pconv2d_data import DataGenerator, torch_vgg_pp
+from inpainter_utils.pconv2d_data import DataGenerator, torch_preprocessing
 from inpainter_utils.pconv2d_model import pconv_model
 
 # SETTINGS:
@@ -14,14 +14,14 @@ INIT_STAGE   = True # fine-tuning stage if False
 
 # DATA GENERATORS:
 # Create training generator
-train_datagen   = DataGenerator(preprocessing_function=torch_vgg_pp, horizontal_flip=True)
+train_datagen   = DataGenerator(preprocessing_function=torch_preprocessing, horizontal_flip=True)
 train_generator = train_datagen.flow_from_directory(
     IMG_DIR + 'train/',
     target_size=(512, 512),
     batch_size=BATCH_SIZE
 )
 # Create validation generator
-val_datagen   = DataGenerator(preprocessing_function=torch_vgg_pp)
+val_datagen   = DataGenerator(preprocessing_function=torch_preprocessing)
 val_generator = val_datagen.flow_from_directory(
     IMG_DIR + 'validation/',
     target_size=(512, 512),

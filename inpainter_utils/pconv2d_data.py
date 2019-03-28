@@ -96,14 +96,17 @@ def random_mask(height, width, channels=3, mask_seed=None):
     return img
 
 
-def torch_vgg_pp(x):
+def torch_preprocessing(x):
     """
     Image pre-processing function used in PyTorch.
 
     For an RGB image:
        1) 1/255 scaling,
        2) per-channel mean subtraction (0.485, 0.456, 0.406),
-       2) per-channel scaling by std (0.229, 0.224, 0.225).
+       3) per-channel scaling by std (0.229, 0.224, 0.225).
+
+    Parameters
+        x: numpy array with an image or a batch of images.
     """
     x /= 255.
     x[..., 0] -= 0.485
@@ -113,3 +116,28 @@ def torch_vgg_pp(x):
     x[..., 1] /= 0.224
     x[..., 2] /= 0.225
     return x
+
+
+def torch_postprocessing(x, return_int=True):
+    """
+    Post-processing function to invert `torch_preprocessing` and clip values autside [0..255].
+
+    Parameters
+        x: numpy array with an image or a batch of images.
+        return_int: boolean, whether to cast the image to `uint8`, returns `float` if False.
+
+    Comments
+        The color scaling is done in-place.
+    """
+    x[..., 0] *= 0.229
+    x[..., 1] *= 0.224
+    x[..., 2] *= 0.225
+    x[..., 0] += 0.485
+    x[..., 1] += 0.456
+    x[..., 2] += 0.406
+    x *= 255.
+    if return_int:
+        return x.clip(0, 255).astype('uint8')
+    else:
+        return x.clip(0, 255)
+        
