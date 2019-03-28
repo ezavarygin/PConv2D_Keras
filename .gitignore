@@ -1,4 +1,8 @@
 *~
 *.pyc
+
 inpainter_utils/__pycache__/
+
 data/images/
+
+.ipynb_checkpoints/
