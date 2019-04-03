@@ -76,11 +76,11 @@ def decoder_block(prev_up_img, prev_up_mask, enc_img, enc_mask, filters, last_la
     return pconv, mask
 
 
-def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False):
+def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(512, 512)):
     """Inpainting model."""
-    
-    img_input  = Input(shape=(512, 512, 3), name='input_img')
-    mask_input = Input(shape=(512, 512, 3), name='input_mask')
+
+    img_input  = Input(shape=(image_size[0], image_size[1], 3), name='input_img')
+    mask_input = Input(shape=(image_size[0], image_size[1], 3), name='input_mask')
     
     # Encoder:
     # --------
@@ -105,11 +105,12 @@ def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False):
     d_img_16 = decoder_block(d_img_15, d_mask_15, img_input, mask_input, 3, last_layer=True, count='16')
     
     model = Model(inputs=[img_input, mask_input], outputs=d_img_16)
-  
-    if fine_tuning:
-        for l in model.layers:
-            if 'bn_enc' in l.name:
-                l.trainable = False
+
+    # This will also freeze bn parameters `beta` and `gamma`: 
+    #if fine_tuning:
+    #    for l in model.layers:
+    #        if 'bn_enc' in l.name:
+    #            l.trainable = False
     
     if predict_only:
         return model
