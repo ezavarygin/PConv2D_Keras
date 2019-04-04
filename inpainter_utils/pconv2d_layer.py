@@ -50,7 +50,6 @@ class myPConv2D(Conv2D):
 
     def call(self, inputs):
         assert isinstance(inputs, list) and len(inputs) == 2
-
         #img, mask = inputs
      
         # Masked convolution:
@@ -61,7 +60,6 @@ class myPConv2D(Conv2D):
                               data_format=self.data_format)
       
         # Image scaling:
-        # --------------
         sum_m = K.conv2d(inputs[1], 
                          self.kernel_mask, 
                          strides=self.strides, 
@@ -110,4 +108,3 @@ class myPConv2D(Conv2D):
         if self.last_layer:
             return new_shape
         return [new_shape, new_shape]
-    

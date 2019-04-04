@@ -45,8 +45,6 @@ class DataGenerator(ImageDataGenerator):
             masked = orig.copy()
             masked *= mask
                         
-            # Yield ((img, mask),  label) training batches
-            #gc.collect()
             yield [masked, mask], orig    
 
 
@@ -140,4 +138,3 @@ def torch_postprocessing(x, return_int=True):
         return x.clip(0, 255).astype('uint8')
     else:
         return x.clip(0, 255)
-        

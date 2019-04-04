@@ -116,6 +116,5 @@ def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(51
         return model
   
     model.compile(Adam(lr=lr), loss=total_loss(mask_input))
-    #model.compile(Adam(lr=lr), loss='mse')
     
     return model
