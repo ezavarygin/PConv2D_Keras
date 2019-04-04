@@ -63,7 +63,7 @@ def total_loss(mask):
         l_style = loss_style(vgg_out, vgg_gt, vgg_comp) 
         l_tv    = loss_tv(y_comp, mask_inv)
     
-        return l_valid + 6.*l_hole + 0.05*l_perc + 120.*l_style #+ 0.1*l_tv
+        return l_valid + 6.*l_hole + 0.05*l_perc + 120.*l_style + 0.1*l_tv
     
     return loss
 
