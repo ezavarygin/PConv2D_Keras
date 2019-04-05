@@ -10,7 +10,13 @@ This implementation was inspired by and is partially based on the early version 
 - OpenCV and NumPy (for mask generator)
 
 ## How to run the code
-You can either run ```python inpainter_main.py``` to train your model and then test it using the jupyter notebook provided or train and test the model in the jupyter notebook straight away. Make sure you set the paths to your datasets before running the code. Note, the code is using the ImageDataGenerator class from Keras. These paths should therefore point to one level above in the directory tree, i.e. if e.g. your train images are stored in the directory ```path/to/train/images/subdir/``` then you set ```IMG_DIR_TRAIN = path/to/train/images/```. If there are more than one directory in ```path/to/train/images/```, they all will be used in training.
+First, set proper paths to your datasets (```IMG_DIR_TRAIN``` and ```IMG_DIR_VAL``` in the ```inpainter_main.py``` file). Note, the code is using the ImageDataGenerator class from Keras. These paths should therefore point to one level above in the directory tree, i.e. if e.g. your train images are stored in the directory ```path/to/train/images/dir/subdir/``` then you set ```IMG_DIR_TRAIN = path/to/train/images/dir/```. If there is more than one directory in ```path/to/train/images/dir/``` (e.g. associated with different classes), they all will be used in training. When the paths are set, run the code
+```
+python inpainter_main.py
+```
+This will start the initial training stage 1. When it is complete, set ```STAGE_1``` to ```False``` and ```LAST_CHECKPOINT``` to be the path to the checkpoint from the last epoch on stage 1. Then run the code again. This will start the fine-tuning stage 2.
+
+You can also do all this in the jupyter notebook provided.
 
 ## VGG16 model for feature extraction
 The authors of the paper used PyTorch to implement the model. The VGG16 model was chosen for feature extraction. The [VGG16 model in PyTorch](https://pytorch.org/docs/stable/torchvision/models.html) was trained with the following image pre-processing:
@@ -29,21 +35,23 @@ Due to different pre-processing, the scales of features extracted using the VGG1
 
 ## Mask dataset
 Random masks consisting of circles and lines are generated using the OpenCV library. The mask generator is the modified version of the one used [here](https://github.com/MathiasGruber/PConv-Keras). It was modified to generate reproducible masks for validation images.
-To generate consistent masks, i.e. the same set of masks after each epochs, for validation images, make sure the number of images in your validation set is equal to the product of ```VAL_STEPS``` and ```VAL_BATCH_SIZE```. I used 400 validation images with ```VAL_STEPS = 100``` and ```VAL_BATCH_SIZE = 4```. You might need to change these parameters if you want to use more/less validation images with consistent masks between different epochs.
+To generate consistent masks, i.e. the same set of masks after each epochs, for validation images, make sure the number of images in your validation set is equal to the product of ```STEPS_VAL``` and ```BATCH_SIZE_VAL```. I used 400 validation images with ```STEPS_VAL = 100``` and ```BATCH_SIZE_VAL = 4```. You might need to change these parameters if you want to use more/less validation images with consistent masks between different epochs.
 
 ## Image dataset
 The examples shown below were generated using the model trained on the [Open Images Dataset](https://storage.googleapis.com/openimages/web/index.html) (subset with bounding boxes). You can train the model using other datasets.
 
 ## Training
-
 The model was trained in two steps:
 1. Initial training (80 epochs, learning rate 0.0002, BatchNorm enabled),
 2. Fine-tuning (20 epochs, learning rate 0.00005, BatchNorm disabled in encoder)
 
-with the batch size of 4 and 5000 steps per epoch.
+with the batch size of 4 and 5000 steps per epoch. Note, during training, I did not stick to one particular set of hyperparameters. Instead, I experienced with the batch size, learning rate and also with removing some particular loss terms in Eq.7. The numbers above are therefore approximate. At the end of training the total loss is around 1.6.
 
 ## Results
 Comming soon...
 
 ## Comments
 In the examples shown above, the trained model performs very well. However, in some cases the results are not even near as good. Likely, more training is needed.
+
+## Acknowledgements
+A big thank you goes to [Mathias Gruber](https://github.com/MathiasGruber) for making his repository public and to [Guilin Liu](https://github.com/liuguilin1225) for his feedback on the losses and the image pre-processing scheme used in the paper.
