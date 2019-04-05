@@ -5,6 +5,7 @@ from inpainter_utils.pconv2d_model import pconv_model
 # SETTINGS:
 IMG_DIR_TRAIN   = "data/images/train/"
 IMG_DIR_VAL     = "data/images/validation/"
+VGG16_WEIGHTS   = 'data/vgg16_weights/vgg16_pytorch2keras.h5'
 WEIGHTS_DIR     = "callbacks/weights/"
 TB_DIR          = "callbacks/tensorboard/"
 CSV_DIR         = 'callbacks/csvlogger/'
@@ -18,7 +19,7 @@ STEPS_VAL       = 100
 BATCH_SIZE_VAL  = 4
 IMAGE_SIZE      = (512, 512)
 STAGE_1         = True # Initial training if True, Fine-tuning if False 
-LAST_CHECKPOINT = "callbacks/weights/initial/weights.80.1.85-1.70.hdf5" # set this to be the path to the checkpoint from the last 
+LAST_CHECKPOINT = "callbacks/weights/initial/weights.80-1.86-1.73.hdf5" # set this to be the path to the checkpoint from the last 
                                                                         # epoch on Stage 1, only needed if STAGE_1 was set to False 
 
 # DATA GENERATORS:
@@ -40,9 +41,9 @@ val_generator = val_datagen.flow_from_directory(
 )
 
 # TRAINING:
-if INIT_STAGE:
+if STAGE_1:
     # Stage 1: initial training
-    model = pconv_model(lr=LR_STAGE1, image_size=IMAGE_SIZE)
+    model = pconv_model(lr=LR_STAGE1, image_size=IMAGE_SIZE, vgg16_weights=VGG16_WEIGHTS)
     model.fit_generator(
         train_generator,
         steps_per_epoch=STEPS_PER_EPOCH,
@@ -57,7 +58,7 @@ if INIT_STAGE:
     )
 else:
     # Stage 2: fine-tuning
-    model = pconv_model(fine_tuning=True, lr=LR_STAGE2, image_size=IMAGE_SIZE)
+    model = pconv_model(fine_tuning=True, lr=LR_STAGE2, image_size=IMAGE_SIZE, vgg16_weights=VGG16_WEIGHTS)
     model.load_weights(LAST_CHECKPOINT)
     model.fit_generator(
         train_generator,

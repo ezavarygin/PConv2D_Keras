@@ -76,7 +76,7 @@ def decoder_block(prev_up_img, prev_up_mask, enc_img, enc_mask, filters, last_la
     return pconv, mask
 
 
-def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(512, 512)):
+def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(512, 512), vgg16_weights='imagenet'):
     """Inpainting model."""
 
     img_input  = Input(shape=(image_size[0], image_size[1], 3), name='input_img')
@@ -115,6 +115,6 @@ def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(51
     if predict_only:
         return model
   
-    model.compile(Adam(lr=lr), loss=total_loss(mask_input))
+    model.compile(Adam(lr=lr), loss=total_loss(mask_input, vgg16_weights=vgg16_weights))
     
     return model

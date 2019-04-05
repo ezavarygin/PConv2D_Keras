@@ -10,7 +10,11 @@ This implementation was inspired by and is partially based on the early version 
 - OpenCV and NumPy (for mask generator)
 
 ## How to run the code
-First, set proper paths to your datasets (```IMG_DIR_TRAIN``` and ```IMG_DIR_VAL``` in the ```inpainter_main.py``` file). Note, the code is using the ImageDataGenerator class from Keras. These paths should therefore point to one level above in the directory tree, i.e. if e.g. your train images are stored in the directory ```path/to/train/images/dir/subdir/``` then you set ```IMG_DIR_TRAIN = path/to/train/images/dir/```. If there is more than one directory in ```path/to/train/images/dir/``` (e.g. associated with different classes), they all will be used in training. When the paths are set, run the code
+First, set proper paths to your datasets (```IMG_DIR_TRAIN``` and ```IMG_DIR_VAL``` in the ```inpainter_main.py``` file). Note, the code is using the ImageDataGenerator class from Keras. These paths should therefore point to one level above in the directory tree, i.e. if e.g. your train images are stored in the directory ```path/to/train/images/dir/subdir/``` then you set ```IMG_DIR_TRAIN = path/to/train/images/dir/```. If there is more than one directory in ```path/to/train/images/dir/``` (e.g. associated with different classes), they all will be used in training. 
+
+Second, download the VGG16 weights ported from PyTorch [here](https://github.com/ezavarygin/vgg16_pytorch2keras) and set  ```VGG16_WEIGHTS``` in the ```inpainter_main.py``` file to be the path to these weights.
+
+When the paths are set, run the code
 ```
 python inpainter_main.py
 ```

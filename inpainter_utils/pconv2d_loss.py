@@ -33,20 +33,19 @@ def vgg16_feature_model(flayers, weights='imagenet'):
     
     return features_model
 
-VGG16_W_PATH = "data/vgg16_weights/vgg16_pytorch2keras.h5"
-vgg16_lnames = ['block1_pool', 'block2_pool', 'block3_pool']
-vgg_model = vgg16_feature_model(vgg16_lnames, weights=VGG16_W_PATH)
   
 # Losses:
 # -------
  
-def total_loss(mask):
+def total_loss(mask, vgg16_weights='imagenet'):
     """
     Total loss defined in Eq 7 of Liu et al 2018 with:
     y_true = I_gt,
     y_pred = I_out,
     y_comp = I_comp.
     """
+    vgg16_lnames = ['block1_pool', 'block2_pool', 'block3_pool']
+    vgg_model = vgg16_feature_model(vgg16_lnames, weights=vgg16_weights)
     def loss(y_true, y_pred):
         mask_inv = 1 - mask
         y_comp   = mask * y_true + mask_inv * y_pred
