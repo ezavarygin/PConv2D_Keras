@@ -31,7 +31,7 @@ def encoder_block(input_img, input_mask, filters, kernel_size, batch_norm=True, 
                             kernel_size,
                             strides=2,
                             padding='same',
-                            use_bias=not batch_norm,
+                            use_bias=True,
                             kernel_initializer='he_uniform',
                             name='pconv2d_enc'+count
                            )([input_img, input_mask])
@@ -69,7 +69,7 @@ def decoder_block(prev_up_img, prev_up_mask, enc_img, enc_mask, filters, last_la
     if last_layer:
         return myPConv2D(filters, 3, strides=1, padding='same', use_bias=True, kernel_initializer='he_uniform', last_layer=last_layer, name='pconv2d_dec'+count)([conc_img, conc_mask])
 
-    pconv, mask = myPConv2D(filters, 3, strides=1, padding='same', use_bias=False, kernel_initializer='he_uniform', name='pconv2d_dec'+count)([conc_img, conc_mask])
+    pconv, mask = myPConv2D(filters, 3, strides=1, padding='same', use_bias=True, kernel_initializer='he_uniform', name='pconv2d_dec'+count)([conc_img, conc_mask])
     pconv = BatchNormalization(name='bn_dec'+count)(pconv)
     pconv = LeakyReLU(alpha=0.2, name='leaky_dec'+count)(pconv)
     
@@ -107,10 +107,10 @@ def pconv_model(fine_tuning=False, lr=0.0002, predict_only=False, image_size=(51
     model = Model(inputs=[img_input, mask_input], outputs=d_img_16)
 
     # This will also freeze bn parameters `beta` and `gamma`: 
-    #if fine_tuning:
-    #    for l in model.layers:
-    #        if 'bn_enc' in l.name:
-    #            l.trainable = False
+    if fine_tuning:
+        for l in model.layers:
+            if 'bn_enc' in l.name:
+                l.trainable = False
     
     if predict_only:
         return model
