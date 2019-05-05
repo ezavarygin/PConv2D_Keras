@@ -64,7 +64,7 @@ def total_loss(mask, vgg16_weights='imagenet'):
     return loss
 
 
-def loss_l1(y_true, y_pred, size_average=True, norm=None):
+def loss_l1(y_true, y_pred):
     """ 
     Size-averaged L1 loss used in all the losses.
     
@@ -72,15 +72,10 @@ def loss_l1(y_true, y_pred, size_average=True, norm=None):
     If size_average is False, the l1 losses are sums divided by norm (should be specified), 
         only have effect if y_true.ndim = 4.
     """
-    if K.ndim(y_true) == 4 and not size_average:
-        assert norm is not None, "'size_average' was set to False -> 'norm' must be float or int."
     
     if K.ndim(y_true) == 4:
         # images and vgg features
-        if size_average:
-            return K.mean(K.abs(y_pred - y_true), axis=[1,2,3])
-        # TV loss (normalisation is done for y_pred and y_true)
-        return K.sum(K.abs(y_pred - y_true), axis=[1,2,3]) / norm
+        return K.mean(K.abs(y_pred - y_true), axis=[1,2,3])
     elif K.ndim(y_true) == 3:
         # gram matrices
         return K.mean(K.abs(y_pred - y_true), axis=[1,2])
@@ -144,10 +139,6 @@ def loss_tv(y_comp, mask_inv):
 
     # Create dilated hole region using a 3x3 kernel of all 1s.
     kernel = K.ones(shape=(3, 3, mask_inv.shape[3], mask_inv.shape[3]))    
-    # Note, a slightly more optimal kernel would be a 'cross' (ones in the corners are not needed):
-    # [[0. 1. 0.]
-    #  [1. 1. 1.]
-    #  [0. 1. 0.]]
 
     dilated_mask = K.conv2d(mask_inv, kernel, data_format='channels_last', padding='same')
     dilated_mask = K.clip(dilated_mask, 0., 1.)
@@ -160,9 +151,7 @@ def loss_tv(y_comp, mask_inv):
     #   the gradients. The TV loss part based on the inpainted regions should be scaled 
     #   well with the weight 0.1 from the paper.
 
-    norm = K.cast(mask_inv.shape[1] * mask_inv.shape[2] * mask_inv.shape[3], dtype=y_comp.dtype)
-
     # Compute dilated hole region of y_comp
     P = dilated_mask * y_comp
     
-    return loss_l1(P[:,:-1,:,:], P[:,1:,:,:], size_average=False, norm=norm) + loss_l1(P[:,:,:-1,:], P[:,:,1:,:], size_average=False, norm=norm)
+    return loss_l1(P[:,:-1,:,:], P[:,1:,:,:]) + loss_l1(P[:,:,:-1,:], P[:,:,1:,:])
