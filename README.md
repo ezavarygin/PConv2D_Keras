@@ -42,20 +42,25 @@ Random masks consisting of circles and lines are generated using the OpenCV libr
 To generate consistent masks, i.e. the same set of masks after each epochs, for validation images, make sure the number of images in your validation set is equal to the product of ```STEPS_VAL``` and ```BATCH_SIZE_VAL```. I used 400 validation images with ```STEPS_VAL = 100``` and ```BATCH_SIZE_VAL = 4```. You might need to change these parameters if you want to use more/less validation images with consistent masks between different epochs.
 
 ## Image dataset
-The examples shown below were generated using the model trained on the [Open Images Dataset](https://storage.googleapis.com/openimages/web/index.html) (subset with bounding boxes). You can train the model using other datasets.
+The examples shown below were generated using the model trained on the [Open Images Dataset](https://storage.googleapis.com/openimages/web/index.html) (subset with bounding boxes, partitions 1 to 5). You can train the model using other datasets.
 
 ## Training
 The model was trained in two steps:
-1. Initial training (80 epochs, learning rate 0.0002, BatchNorm enabled),
-2. Fine-tuning (20 epochs, learning rate 0.00005, BatchNorm disabled in encoder)
 
-with the batch size of 4 and 5000 steps per epoch. Note, during training, I did not stick to one particular set of hyperparameters. Instead, I experienced with the batch size, learning rate and also with removing some particular loss terms in Eq.7. The numbers above are therefore approximate. At the end of training the total loss is around 1.6.
+1. Initial training (BatchNorm enabled): 70 epochs with learning rate 0.0002, then 10 epochs with learning rate 0.0001,
+2. Fine-tuning (BatchNorm disabled in encoder): 40 epochs with learning rate 0.00005
 
-## Results
-Comming soon...
+with the batch size of 5 and 2500 steps per epoch.
+
+![Training history](data/history/training_history.png?raw=true "Training history")
+
+The weights of the trained model can be downloaded via [this link](https://drive.google.com/open?id=1XdcKQASsa8mtpPIt3aAkcvije0U1J2Fy).
+
+## Inpainting results
+![Examples](data/examples/examples.png?raw=true "Examples")
 
 ## Comments
-In the examples shown above, the trained model performs very well. However, in some cases the results are not even near as good. Likely, more training is needed.
+I cannot reach the same inpainting quality as was demostrated in the paper. Suggestions and bug reports are welcome.
 
 ## Acknowledgements
 A big thank you goes to [Mathias Gruber](https://github.com/MathiasGruber) for making his repository public and to [Guilin Liu](https://github.com/liuguilin1225) for his feedback on the losses and the image pre-processing scheme used in the paper.
