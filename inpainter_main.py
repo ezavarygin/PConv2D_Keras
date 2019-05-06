@@ -9,18 +9,18 @@ VGG16_WEIGHTS   = 'data/vgg16_weights/vgg16_pytorch2keras.h5'
 WEIGHTS_DIR     = "callbacks/weights/"
 TB_DIR          = "callbacks/tensorboard/"
 CSV_DIR         = 'callbacks/csvlogger/'
-BATCH_SIZE      = 4
-STEPS_PER_EPOCH = 5000
-EPOCHS_STAGE1   = 80
-EPOCHS_STAGE2   = 20
+BATCH_SIZE      = 5
+STEPS_PER_EPOCH = 2500
+EPOCHS_STAGE1   = 70
+EPOCHS_STAGE2   = 50
 LR_STAGE1       = 0.0002
 LR_STAGE2       = 0.00005
 STEPS_VAL       = 100
 BATCH_SIZE_VAL  = 4
 IMAGE_SIZE      = (512, 512)
 STAGE_1         = True # Initial training if True, Fine-tuning if False 
-LAST_CHECKPOINT = "callbacks/weights/initial/weights.80-1.86-1.73.hdf5" # set this to be the path to the checkpoint from the last 
-                                                                        # epoch on Stage 1, only needed if STAGE_1 was set to False 
+LAST_CHECKPOINT =  WEIGHTS_DIR + "initial/weights.80-1.94-1.83.hdf5" # set this to be the path to the checkpoint from the last 
+                                                                     # epoch on Stage 1, only needed if STAGE_1 was set to False 
 
 # DATA GENERATORS:
 train_datagen   = DataGenerator(preprocessing_function=torch_preprocessing, horizontal_flip=True)
